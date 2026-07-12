@@ -1,0 +1,525 @@
+<title>RINGANA Bestellliste – Produktsuche</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-alt: #eafaf3;
+    --text: #0d0f0e;
+    --text-muted: #5c6663;
+    --accent: #00c896;
+    --accent-strong: #00785c;
+    --accent-soft: #d1f5e8;
+    --border: #e1e5e3;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0b0a;
+      --surface: #131413;
+      --surface-alt: #1a1f1c;
+      --text: #f7f9f8;
+      --text-muted: #9aa8a3;
+      --accent: #2ee6ac;
+      --accent-strong: #8ff5cf;
+      --accent-soft: #163229;
+      --border: #262b28;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a0b0a;
+    --surface: #131413;
+    --surface-alt: #1a1f1c;
+    --text: #f7f9f8;
+    --text-muted: #9aa8a3;
+    --accent: #2ee6ac;
+    --accent-strong: #8ff5cf;
+    --accent-soft: #163229;
+    --border: #262b28;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-alt: #eafaf3;
+    --text: #0d0f0e;
+    --text-muted: #5c6663;
+    --accent: #00c896;
+    --accent-strong: #00785c;
+    --accent-soft: #d1f5e8;
+    --border: #e1e5e3;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.45;
+  }
+
+  .page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  header.hero {
+    margin-bottom: 1.75rem;
+  }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: clamp(1.9rem, 4vw, 2.5rem);
+    font-weight: 600;
+    margin: 0.25rem 0 0.35rem;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  .sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 60ch;
+  }
+
+  .toolbar {
+    position: sticky;
+    top: 0.75rem;
+    z-index: 5;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  .search-field {
+    flex: 1 1 220px;
+    position: relative;
+  }
+
+  .search-field svg {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 9px;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.92rem;
+    font-family: inherit;
+  }
+
+  .search-field input[type="text"] {
+    padding-left: 2.15rem;
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex: 0 0 auto;
+  }
+
+  .price-row label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .price-row input {
+    width: 6.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-row .dash {
+    color: var(--text-muted);
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-muted);
+    border-radius: 999px;
+    padding: 0.32rem 0.75rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+  }
+
+  .chip.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-strong);
+    font-weight: 600;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .meta-row button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  thead th {
+    text-align: left;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+  }
+
+  thead th.active {
+    color: var(--accent-strong);
+  }
+
+  thead th .arrow {
+    display: inline-block;
+    width: 0.8em;
+    opacity: 0.6;
+  }
+
+  th.num, td.num {
+    text-align: right;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody tr:nth-child(even) {
+    background: var(--surface-alt);
+  }
+
+  td {
+    padding: 0.6rem 0.9rem;
+    vertical-align: top;
+  }
+
+  td.product {
+    font-weight: 500;
+  }
+
+  td.category {
+    color: var(--text-muted);
+  }
+
+  td.num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  mark {
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    border-radius: 3px;
+    padding: 0 0.1em;
+  }
+
+  .empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  footer {
+    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 560px) {
+    .toolbar { top: 0.4rem; }
+    thead th { position: static; }
+  }
+</style>
+
+<div class="page">
+  <header class="hero">
+    <div class="eyebrow">RINGANA · Preisliste Österreich</div>
+    <h1>Bestellliste durchsuchen</h1>
+    <p class="sub">Preise in Euro inkl. MwSt., Stand 8. Januar 2026. Nach Produktname oder Kategorie filtern und den Preisbereich eingrenzen.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="search-row">
+      <div class="search-field">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="q" placeholder="Produkt suchen, z. B. „hydro serum“ …" autocomplete="off" />
+      </div>
+      <div class="price-row">
+        <label for="min">von €</label>
+        <input type="number" id="min" min="0" step="0.10" placeholder="0" />
+        <span class="dash">–</span>
+        <label for="max">bis €</label>
+        <input type="number" id="max" min="0" step="0.10" placeholder="515,80" />
+      </div>
+    </div>
+    <div class="chip-row" id="chips"></div>
+  </div>
+
+  <div class="meta-row">
+    <span id="count"></span>
+    <button id="reset" type="button">Filter zurücksetzen</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-sort="name">Produkt <span class="arrow"></span></th>
+          <th data-sort="category">Kategorie <span class="arrow"></span></th>
+          <th class="num" data-sort="price">Preis <span class="arrow"></span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>Keine Produkte in diesem Preisbereich oder mit diesem Suchbegriff gefunden.</div>
+  </div>
+
+  <footer>109 Produkte · Quelle: Bestellliste Ringana, Stand 8.1.2026 (Österreich)</footer>
+</div>
+
+<script>
+const PRODUCTS = [
+  ["FRESH cleanser",27.10,"Face"],["FRESH cleansing water",27.10,"Face"],
+  ["FRESH toner pure",26.80,"Face"],["FRESH toner calm",26.80,"Face"],
+  ["FRESH hydro serum",59.70,"Face"],["FRESH anti wrinkle serum",77.40,"Face"],
+  ["FRESH cream light",51.10,"Face"],["FRESH cream medium",56.20,"Face"],
+  ["FRESH cream rich",62.30,"Face"],["FRESH moisturiser for men",49.70,"Face"],
+  ["FRESH overnight face treatment",81.40,"Face"],["FRESH skin perfection",89.80,"Face"],
+  ["FRESH eye serum",49.70,"Face"],["FRESH eye cream",54.70,"Face"],
+  ["FRESH illuminating enzyme mask",40.10,"Face"],["FRESH scrub face & body",48.70,"Face"],
+  ["FRESH ADDS effect",68.40,"Face"],["FRESH ADDS glow",49.90,"Face"],
+  ["FRESH ADDS repair",49.90,"Face"],["FRESH tinted moisturiser ohne LSF",50.90,"Face"],
+  ["FRESH tinted moisturiser SPF 30 N1-4",50.90,"Face"],["FRESH lip balm classic",14.50,"Face"],
+  ["FRESH tinted lip balm & cheek rosewood",15.30,"Face"],
+
+  ["FRESH tooth oil",15.70,"Tooth"],["FRESH tooth balm",15.70,"Tooth"],
+
+  ["FRESH deodorant",27.60,"Body"],["FRESH deodorant pocket",12.60,"Body"],
+  ["FRESH hand balm",25.30,"Body"],["FRESH hand balm pocket",11.90,"Body"],
+  ["FRESH intensive hand cream",28.70,"Body"],["FRESH foot balm",26.10,"Body"],
+  ["FRESH light legs",29.30,"Body"],["FRESH body milk light",37.70,"Body"],
+  ["FRESH body milk rich",38.80,"Body"],["FRESH soap",10.90,"Body"],
+  ["FRESH soap liquid",20.90,"Body"],["FRESH stay fresh",11.20,"Body"],
+
+  ["FRESH volume shampoo",21.10,"Hair"],["FRESH repair shampoo",21.10,"Hair"],
+  ["FRESH body wash",20.70,"Hair"],["FRESH hair treatment",28.60,"Hair"],
+
+  ["FRESH sunscreen face SPF 30",33.80,"Sun"],["FRESH sunscreen SPF 25",49.90,"Sun"],
+  ["FRESH sunscreen pocket SPF 25",16.30,"Sun"],["FRESH after sun & tan booster",34.30,"Sun"],
+
+  ["FRESH skin care set light",148.20,"Skincare Set"],["FRESH skin care set medium",152.80,"Skincare Set"],
+  ["FRESH skin care set rich",174.20,"Skincare Set"],["FRESH skin care set for men",122.90,"Skincare Set"],
+
+  ["FRESH pack ABC",181.00,"Packs"],["FRESH pack ABC, Set of 3",515.80,"Packs"],
+  ["FRESH pack antiox",78.90,"Packs"],["FRESH pack antiox, Set of 3",213.00,"Packs"],
+  ["FRESH pack balancing",50.60,"Packs"],["FRESH pack balancing, Set of 3",136.60,"Packs"],
+  ["FRESH pack cleansing",71.60,"Packs"],["FRESH pack cleansing, Set of 3",193.30,"Packs"],
+
+  ["RINGANA dea",62.40,"Drinks"],["RINGANA dea, Set of 2",112.30,"Drinks"],
+  ["RINGANA chi",50.90,"Drinks"],["RINGANA chi, Set of 2",91.60,"Drinks"],
+  ["RINGANA isi",56.80,"Drinks"],["RINGANA isi, Set of 2",102.20,"Drinks"],
+  ["RINGANA bty",69.40,"Drinks"],["RINGANA bty, Set of 2",124.90,"Drinks"],
+
+  ["RINGANA COMPLETE d-eat",67.30,"Complete"],["RINGANA COMPLETE d-eat, Set of 3",181.70,"Complete"],
+
+  ["RINGANA SPORT protein",53.10,"Sport"],["RINGANA SPORT protein, Set of 3",143.40,"Sport"],
+  ["RINGANA SPORT endurance",48.40,"Sport"],["RINGANA SPORT endurance, Set of 3",130.70,"Sport"],
+  ["RINGANA SPORT push",53.20,"Sport"],["RINGANA SPORT push, Set of 3",143.60,"Sport"],
+
+  ["CAPS move",46.20,"Caps"],["CAPS move, Set of 3",124.70,"Caps"],
+  ["CAPS beauty & hair",59.70,"Caps"],["CAPS beauty & hair, Set of 3",161.20,"Caps"],
+  ["BEYOND biotic",97.80,"Caps"],["BEYOND biotic, Set of 3",264.10,"Caps"],
+  ["CAPS cerebro",56.50,"Caps"],["CAPS cerebro, Set of 3",152.60,"Caps"],
+  ["CAPS d-gest",51.80,"Caps"],["CAPS d-gest, Set of 3",139.90,"Caps"],
+  ["CAPS fem",56.70,"Caps"],["CAPS fem, Set of 3",153.10,"Caps"],
+  ["CAPS immu",56.70,"Caps"],["CAPS immu, Set of 3",153.10,"Caps"],
+  ["CAPS moodoo",59.20,"Caps"],["CAPS moodoo, Set of 3",159.80,"Caps"],
+  ["CAPS mascu",59.20,"Caps"],["CAPS mascu, Set of 3",159.80,"Caps"],
+  ["BEYOND spermidine",97.80,"Caps"],["BEYOND spermidine, Set of 3",264.10,"Caps"],
+  ["CAPS protect",65.10,"Caps"],["CAPS protect, Set of 3",175.80,"Caps"],
+  ["CAPS hydro",42.20,"Caps"],["CAPS hydro, Set of 3",113.90,"Caps"],
+  ["BEYOND CAPS omega",89.80,"Caps"],["BEYOND CAPS omega, Set of 3",242.50,"Caps"],
+
+  ["FRESH baby cream",10.60,"Baby"],["FRESH baby bum cream",11.60,"Baby"],
+  ["FRESH baby oil",9.30,"Baby"],["FRESH baby sunscreen SPF 50",20.10,"Baby"],
+  ["FRESH baby tooth gel",11.20,"Baby"],["FRESH baby body & hair wash",8.20,"Baby"],
+
+  ["manadental starterkit",279.00,"Manadental"],["manadental liquid",29.50,"Manadental"],
+  ["manadental liquid, Set of 3",79.70,"Manadental"],["manadental travel case",39.00,"Manadental"]
+];
+
+const CATEGORIES = [...new Set(PRODUCTS.map(p => p[2]))];
+const state = { q: "", min: null, max: null, cats: new Set(), sortKey: "name", sortDir: 1 };
+
+const chipsEl = document.getElementById("chips");
+CATEGORIES.forEach(cat => {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.type = "button";
+  b.textContent = cat;
+  b.addEventListener("click", () => {
+    if (state.cats.has(cat)) state.cats.delete(cat); else state.cats.add(cat);
+    b.classList.toggle("active");
+    render();
+  });
+  chipsEl.appendChild(b);
+});
+
+const qEl = document.getElementById("q");
+const minEl = document.getElementById("min");
+const maxEl = document.getElementById("max");
+const rowsEl = document.getElementById("rows");
+const countEl = document.getElementById("count");
+const emptyEl = document.getElementById("empty");
+const fmt = new Intl.NumberFormat("de-AT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function highlight(name, q) {
+  if (!q) return escapeHtml(name);
+  const i = name.toLowerCase().indexOf(q.toLowerCase());
+  if (i === -1) return escapeHtml(name);
+  return escapeHtml(name.slice(0, i)) + "<mark>" + escapeHtml(name.slice(i, i + q.length)) + "</mark>" + escapeHtml(name.slice(i + q.length));
+}
+
+function render() {
+  const q = state.q.trim().toLowerCase();
+  let items = PRODUCTS.filter(([name, price, cat]) => {
+    if (q && !name.toLowerCase().includes(q)) return false;
+    if (state.min !== null && price < state.min) return false;
+    if (state.max !== null && price > state.max) return false;
+    if (state.cats.size > 0 && !state.cats.has(cat)) return false;
+    return true;
+  });
+
+  items.sort((a, b) => {
+    const ka = state.sortKey === "name" ? a[0] : state.sortKey === "price" ? a[1] : a[2];
+    const kb = state.sortKey === "name" ? b[0] : state.sortKey === "price" ? b[1] : b[2];
+    if (ka < kb) return -1 * state.sortDir;
+    if (ka > kb) return 1 * state.sortDir;
+    return a[0].localeCompare(b[0]);
+  });
+
+  rowsEl.innerHTML = items.map(([name, price, cat]) =>
+    `<tr><td class="product">${highlight(name, state.q)}</td><td class="category">${escapeHtml(cat)}</td><td class="num">€ ${fmt.format(price)}</td></tr>`
+  ).join("");
+
+  emptyEl.hidden = items.length !== 0;
+  countEl.textContent = items.length === PRODUCTS.length
+    ? `${items.length} Produkte`
+    : `${items.length} von ${PRODUCTS.length} Produkten`;
+
+  document.querySelectorAll("th[data-sort]").forEach(th => {
+    const key = th.dataset.sort;
+    th.classList.toggle("active", key === state.sortKey);
+    th.querySelector(".arrow").textContent = key === state.sortKey ? (state.sortDir === 1 ? "↑" : "↓") : "";
+  });
+}
+
+qEl.addEventListener("input", () => { state.q = qEl.value; render(); });
+minEl.addEventListener("input", () => { state.min = minEl.value === "" ? null : parseFloat(minEl.value.replace(",", ".")); render(); });
+maxEl.addEventListener("input", () => { state.max = maxEl.value === "" ? null : parseFloat(maxEl.value.replace(",", ".")); render(); });
+
+document.querySelectorAll("th[data-sort]").forEach(th => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.sort;
+    if (state.sortKey === key) state.sortDir *= -1;
+    else { state.sortKey = key; state.sortDir = 1; }
+    render();
+  });
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  state.q = ""; state.min = null; state.max = null; state.cats.clear();
+  qEl.value = ""; minEl.value = ""; maxEl.value = "";
+  document.querySelectorAll(".chip.active").forEach(c => c.classList.remove("active"));
+  render();
+});
+
+render();
+</script>
